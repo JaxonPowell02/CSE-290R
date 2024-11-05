@@ -1,0 +1,56 @@
+class WoodProject:
+    def __init__(self):
+        self.materials = []
+        self.total_cost = 0
+    
+    def calculate_plywood_sheets(self, piece_width, piece_length, quantity, 
+                               sheet_width=48, sheet_length=96):  # Standard sheet size
+        """
+        Calculate how many plywood sheets are needed for rectangular pieces
+        """
+        # Calculate how many pieces can fit in one sheet
+        pieces_per_row = sheet_width // piece_width
+        pieces_per_column = sheet_length // piece_length
+        pieces_per_sheet = pieces_per_row * pieces_per_column
+        
+        # Calculate total sheets needed
+        sheets_needed = quantity / pieces_per_sheet
+        return math.ceil(sheets_needed)  # Round up to nearest whole sheet
+    
+    def calculate_boards_needed(self, target_width, target_length, 
+                              board_width, board_length):
+        """
+        Calculate how many boards needed to make up a panel
+        """
+        # Calculate how many boards needed for width
+        boards_for_width = math.ceil(target_width / board_width)
+        
+        # Each board can be as long as board_length
+        boards_needed = boards_for_width
+        if target_length > board_length:
+            boards_needed *= math.ceil(target_length / board_length)
+            
+        return boards_needed
+
+def main():
+    print("Wood Project Calculator")
+    print("1. Calculate plywood pieces")
+    print("2. Calculate boards needed")
+    print("3. Calculate board feet")
+    print("4. Calculate total cost")
+    
+    choice = input("Enter your choice (1-4): ")
+    
+    project = WoodProject()
+    
+    if choice == "1":
+        width = float(input("Enter piece width in inches: "))
+        length = float(input("Enter piece length in inches: "))
+        quantity = int(input("Enter number of pieces needed: "))
+        
+        sheets = project.calculate_plywood_sheets(width, length, quantity)
+        print(f"\nYou will need {sheets} sheets of plywood")
+
+if __name__ == "__main__":
+    import math
+    main()
