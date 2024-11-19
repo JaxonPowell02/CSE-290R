@@ -44,7 +44,6 @@ class WoodProject:
             total_sheets += sheets_needed
 
             print(f"\nFor pieces {piece['length']}\" x {piece['width']}\":")
-            print(f"Need {sheets_needed} sheets")
 
         return total_sheets
 
@@ -62,10 +61,26 @@ def main():
         choice = input("Enter your choice (1-3): ")
 
         if choice == "1":
-            length = float(input("Enter piece length (inches): "))
-            width = float(input("Enter piece width (inches): "))
-            quantity = int(input("Enter quantity needed: "))
-            project.add_plywood_piece(length, width, quantity)
+
+            add_loop = True
+            while True:
+
+                length = float(input("Enter piece length (inches): "))
+                width = float(input("Enter piece width (inches): "))
+                quantity = int(input("Enter quantity needed: "))
+                project.add_plywood_piece(length, width, quantity)
+
+                decision = input("Do you want to add another piece (y/n) ")
+
+                if decision.lower() == "y":
+                    continue
+
+                elif decision.lower() == "n":
+                    add_loop = False
+                    break
+                
+                else:
+                    print("Invlaid choice. Please try again.")
 
         elif choice == "2":
             sheets = project.calculate_plywood_sheets()
