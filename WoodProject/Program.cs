@@ -2,10 +2,20 @@
 
 class Program
 {
-
-    static void Main(string args)
+    static void Main(string[] args)
     {
-        Console.WriteLine("Hello World");
+        Console.WriteLine("What is the name of the project: ");
+
     }
+}
+
+
+class Projects
+{
+
+}
+
+class Lumber
+{
 
 }

@@ -1,0 +1,5 @@
+C:\Users\jjpow\OneDrive\Documents\BYUI Fall 2024\CSE 290R\CSE-290R\WoodProject\obj\Debug\net8.0\WoodProject.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jjpow\OneDrive\Documents\BYUI Fall 2024\CSE 290R\CSE-290R\WoodProject\obj\Debug\net8.0\WoodProject.AssemblyInfoInputs.cache
+C:\Users\jjpow\OneDrive\Documents\BYUI Fall 2024\CSE 290R\CSE-290R\WoodProject\obj\Debug\net8.0\WoodProject.AssemblyInfo.cs
+C:\Users\jjpow\OneDrive\Documents\BYUI Fall 2024\CSE 290R\CSE-290R\WoodProject\obj\Debug\net8.0\WoodProject.csproj.CoreCompileInputs.cache
+C:\Users\jjpow\OneDrive\Documents\BYUI Fall 2024\CSE 290R\CSE-290R\WoodProject\obj\Debug\net8.0\WoodProject.sourcelink.json
