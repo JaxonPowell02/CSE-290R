@@ -1,12 +1,3 @@
-#Next features
-#1. Detailed PDF reports of project materials and costs
-#2. Support for different woods
-#4. Multiple projects
-#5. Conversion between metric and standard
-#6. Customizable default sheet sizes
-#7. Include Tax
-#8. GUI
-
 import math
 import csv
 import os
