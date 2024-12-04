@@ -1,10 +1,6 @@
 #Next features
-#1. Detailed PDF reports of project materials and costs
 #2. Support for different woods
-#4. Multiple projects
-#5. Conversion between metric and standard
 #6. Customizable default sheet sizes
-#7. Include Tax
 #8. GUI
 
 import math
@@ -315,7 +311,7 @@ class WoodProject:
         cost_table = Table(cost_data)
         cost_table.setStyle(TableStyle([
             ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-            ('ALIGN', (0,0), (-1,-1), 'LEFT'),
+            ('ALIGN', (0,0), (-1,-1), 'CENTER'),
             ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
             ('GRID', (0,0), (-1,-1), 1, colors.black)
         ]))
@@ -389,60 +385,49 @@ class WoodProject:
 
 def main():
 
+    project_name = input("Enter project name: ")
+    project = WoodProject(project_name)
 
     while True:
         print("\nWood Calculator Menu:")
-        print("1. New Project")
-        print("2. Add plywood piece")
-        print("3. Calculate total sheets needed")
-        print("4. Save to CSV")
-        print("5. Load from CSV")
-        print("6. Calculate board feet")
-        print("7. Add additional materials")
-        print("8. Price calculator")
+        print("1. Add plywood piece")
+        print("2. Calculate total sheets needed")
+        print("3. Save to CSV")
+        print("4. Load from CSV")
+        print("5. Calculate board feet")
+        print("6. Add additional materials")
+        print("7. Price calculator")
+        print("8. Calculate Waste Percentage")
         print("9. Generate PDF Report")
-        print("10. Calculate Waste Percentage")
-        print("11. Exit")
+        print("10. Exit")
 
         choice = input("Enter your choice (1-11): ")
 
-        if choice == "1":
-            project_name = input("Enter project name: ")
-            project = WoodProject(project_name)
+        match choice:
+            case 1:
+                project.new_plywood_piece()
+            case 2:
+                project.calculate_plywood_sheets()
+            case 3:
+                project.save_to_csv()
+            case 4:
+                project.read_from_csv()
+            case 5:
+                project.calculate_board_feet()
+            case 6:
+                project.new_additional_materials()
+            case 7:
+                project.price_calculator()
+            case 8:
+                project.calculate_waste()
+            case 9:
+                project.generate_pdf_report()
+            case 10:
+                print("Exiting program. Goodbye!")
+                break
+            case _:
+                print("Invalid input. Please try again.")
 
-        elif choice == "2":
-            project.new_plywood_piece()
-
-        elif choice == "3":
-            project.calculate_plywood_sheets()
-
-        elif choice == "4":
-            project.save_to_csv()
-
-        elif choice == "5":
-            project.read_from_csv()
-
-        elif choice == "6":
-            project.calculate_board_feet()
-
-        elif choice == "7":
-            project.new_additional_materials()
-
-        elif choice == "8":
-            project.price_calculator()
-
-        elif choice == "9":
-            project.generate_pdf_report()
-
-        elif choice == "10":
-            project.calculate_waste()
-
-        elif choice == "11":
-            print("Exiting program. Goodbye!")
-            break
-
-        else:
-            print("Invalid choice. Please try again.")
-
+  
 if __name__ == "__main__":
     main()
