@@ -1,3 +1,12 @@
+#Next features
+#1. Detailed PDF reports of project materials and costs
+#2. Support for different woods
+#4. Multiple projects
+#5. Conversion between metric and standard
+#6. Customizable default sheet sizes
+#7. Include Tax
+#8. GUI
+
 import math
 import csv
 import os
@@ -12,6 +21,7 @@ class WoodProject:
         self.project_name = project_name
         self.plywood_pieces = []
         self.waste_tracking = []  # New attribute to track waste
+        self.additional_materials = []
 
     def add_plywood_piece(self, length, width, quantity):
         piece = {
@@ -43,7 +53,8 @@ class WoodProject:
                 break
 
     def save_to_csv(self):
-        file_name = f"{self.project_name}.csv"
+        save_file = input("Enter file name to save project to: ")
+        file_name = f"{save_file}.csv"
         with open(file_name, mode="w", newline="") as file:
             writer = csv.writer(file)
             # Write header
@@ -54,7 +65,8 @@ class WoodProject:
         print(f"Project saved to {file_name}.")
 
     def read_from_csv(self):
-        file_name = f"{self.project_name}.csv"
+        open_file = input("What is the name of the file")
+        file_name = f"{open_file}.csv"
         try:
             with open(file_name, mode="r") as file:
                 reader = csv.DictReader(file)
@@ -77,14 +89,61 @@ class WoodProject:
         for piece in self.plywood_pieces:
             piece_area = (piece["length"] * piece["width"]) / 144  
             total_board_feet += piece_area * piece["quantity"]
-        print(f"Total board feet required: {total_board_feet:.2f}")
+        print(f"\nTotal board feet required: {total_board_feet:.2f}")
+
+    def add_additional_materials(self, name, price):
+        material = {
+            "name": name,
+            "price": price
+        }
+        self.additional_materials.append(material)
+        print(f"Added: {name} at ${price:.2f}")
+
+    def new_additional_materials(self):
+        while True:
+            try:
+                material_name = input("Enter the name of the material: ")
+                material_price = float(input("Enter the price of the material: $"))
+                self.add_additional_materials(material_name, material_price)
+            except ValueError:
+                print("Invalid input. Please enter numeric values for length, width, and quantity.")
+                continue
+
+            decision = input("Do you want to add another material? (y/n): ").lower()
+            if decision == "y":
+                continue
+            elif decision == "n":
+                break
+            else:
+                print("Invalid input.")
+                break
 
     def price_calculator(self, sheet_price=0):
+        """
+        Calculate the total cost of plywood sheets and additional materials.
+        """
+        tax = float(input("What is the tax rate (%): "))
+
         if sheet_price <= 0:
-            sheet_price = float(input("Enter the price per sheet of plywood: "))
+            sheet_price = float(input("Enter the price per sheet of plywood: $"))
         total_sheets = self.calculate_plywood_sheets()
-        total_cost = total_sheets * sheet_price
-        print(f"Estimated total cost: ${total_cost:.2f}")
+        plywood_cost = total_sheets * sheet_price
+        
+        # Calculate total cost of additional materials
+        additional_materials_cost = sum(material['price'] for material in self.additional_materials)
+        
+        # Calculate overall cost
+        total_cost = plywood_cost + additional_materials_cost
+        total_cost_after_tax = total_cost + (total_cost* (tax / 100))
+        total_tax = total_cost * tax
+        # Display detailed cost breakdown
+        print("\nCost Breakdown:")
+        print(f"Total Sheets of Plywood: {total_sheets}")
+        print(f"Plywood Cost: ${plywood_cost:.2f}")
+        print(f"Additional Materials Cost: ${additional_materials_cost:.2f}")
+        print(f"Subtotal: ${total_cost:.2f}")
+        print(f"Total tax: ${total_tax:.2f}")
+        print(f"Total Estimated Cost: ${total_cost_after_tax:.2f}")
 
     def calculate_plywood_sheets(self, sheet_length=96, sheet_width=48):
         total_sheets = 0
@@ -133,7 +192,7 @@ class WoodProject:
                 })
 
             total_sheets += sheets_needed
-            print(f"{sheets_needed} sheets needed for {piece['quantity']} pieces of size {piece['length']}\" x {piece['width']}\".")
+            print(f"\n{sheets_needed} sheets needed for {piece['quantity']} pieces of size {piece['length']}\" x {piece['width']}\".")
         
         print(f"\nTotal sheets of plywood needed: {total_sheets}")
         return total_sheets
@@ -157,7 +216,7 @@ class WoodProject:
 
     def generate_pdf_report(self, sheet_price=0):
         """
-        Generate a comprehensive PDF report for the wood project.
+        Generate a comprehensive PDF report for the wood project, including additional materials.
         """
         # Ensure the 'reports' directory exists
         if not os.path.exists('reports'):
@@ -223,11 +282,18 @@ class WoodProject:
         
         # Cost Calculation
         if sheet_price <= 0:
-            sheet_price = float(input("Enter the price per sheet of plywood: "))
-        
+            sheet_price = float(input("Enter the price per sheet of plywood: $"))
+        tax = float(input("What is the tax rate (%): "))        
         total_sheets = self.calculate_plywood_sheets()
-        total_cost = total_sheets * sheet_price
+        plywood_cost = total_sheets * sheet_price
+
+        # Additional Materials Cost
+        additional_materials_cost = sum(material['price'] for material in self.additional_materials)
         
+        # Total Cost
+        total_cost = plywood_cost + additional_materials_cost
+        total_cost_after_tax = total_cost + (total_cost * (tax / 100))
+        total_tax = total_cost * tax
         # Cost Summary
         cost_summary = Paragraph("Cost Summary", styles['Heading2'])
         story.append(Spacer(1, 12))
@@ -238,7 +304,12 @@ class WoodProject:
             ['Total Area (sq in)', f"{total_area:.2f}"],
             ['Sheets Required', str(total_sheets)],
             ['Price per Sheet', f"${sheet_price:.2f}"],
-            ['Total Estimated Cost', f"${total_cost:.2f}"]
+            ['Plywood Cost', f"${plywood_cost:.2f}"],
+            ['Additional Materials Cost', f"${additional_materials_cost:.2f}"],
+            ['Subtotal', f"${total_cost:.2f}"],
+            ['Tax rate', f"%{tax:.2f}"],
+            ['Total tax', f"${total_tax:.2f}"]
+            ['Total Estimated Cost', f"${total_cost_after_tax:.2f}"]
         ]
         
         cost_table = Table(cost_data)
@@ -250,7 +321,26 @@ class WoodProject:
         ]))
         story.append(cost_table)
         
-        # Waste Tracking Section
+        # List of Additional Materials
+        if self.additional_materials:
+            materials_summary = Paragraph("Additional Materials", styles['Heading2'])
+            story.append(Spacer(1, 12))
+            story.append(materials_summary)
+            
+            materials_data = [['Name', 'Price']]
+            for material in self.additional_materials:
+                materials_data.append([material['name'], f"${material['price']:.2f}"])
+            
+            materials_table = Table(materials_data)
+            materials_table.setStyle(TableStyle([
+                ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+                ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+                ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+                ('GRID', (0,0), (-1,-1), 1, colors.black)
+            ]))
+            story.append(materials_table)
+
+# Waste Tracking Section
         waste_summary = Paragraph("Waste Tracking", styles['Heading2'])
         story.append(Spacer(1, 12))
         story.append(waste_summary)
@@ -298,48 +388,56 @@ class WoodProject:
         return file_path
 
 def main():
-    project_name = input("What is the project name: ")
-    project = WoodProject(project_name)
+
 
     while True:
         print("\nWood Calculator Menu:")
-        print("1. Add plywood piece")
-        print("2. Calculate total sheets needed")
-        print("3. Save to CSV")
-        print("4. Load from CSV")
-        print("5. Calculate board feet")
-        print("6. Price calculator")
-        print("7. Generate PDF Report")
-        print("8. Calculate Waste Percentage")
-        print("9. Exit")
+        print("1. New Project")
+        print("2. Add plywood piece")
+        print("3. Calculate total sheets needed")
+        print("4. Save to CSV")
+        print("5. Load from CSV")
+        print("6. Calculate board feet")
+        print("7. Add additional materials")
+        print("8. Price calculator")
+        print("9. Generate PDF Report")
+        print("10. Calculate Waste Percentage")
+        print("11. Exit")
 
-        choice = input("Enter your choice (1-9): ")
+        choice = input("Enter your choice (1-11): ")
 
         if choice == "1":
-            project.new_plywood_piece()
+            project_name = input("Enter project name: ")
+            project = WoodProject(project_name)
 
         elif choice == "2":
-            project.calculate_plywood_sheets()
+            project.new_plywood_piece()
 
         elif choice == "3":
-            project.save_to_csv()
+            project.calculate_plywood_sheets()
 
         elif choice == "4":
-            project.read_from_csv()
+            project.save_to_csv()
 
         elif choice == "5":
-            project.calculate_board_feet()
+            project.read_from_csv()
 
         elif choice == "6":
-            project.price_calculator()
+            project.calculate_board_feet()
 
         elif choice == "7":
-            project.generate_pdf_report()
+            project.new_additional_materials()
 
         elif choice == "8":
-            project.calculate_waste()
+            project.price_calculator()
 
         elif choice == "9":
+            project.generate_pdf_report()
+
+        elif choice == "10":
+            project.calculate_waste()
+
+        elif choice == "11":
             print("Exiting program. Goodbye!")
             break
 

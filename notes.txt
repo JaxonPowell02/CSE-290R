@@ -1,0 +1,5 @@
+If I run the program I need to declare a project name before I can do anything else
+
+I have to run the calculate total sheets needed before I can run the calculate waste percentage
+
+in the .csv create a spot for it to save the additional materials to.
